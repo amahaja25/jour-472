@@ -94,10 +94,13 @@ maryland_expenses |>
 arrange(desc(total))
 ```
 
-```{}
+```         
 ```
 
-**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6.**
+**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6. What department has the most classes that mention "Ethics?" Answer: Information Studies**
 
-```{r}
-```
+umd_courses|> filter(str_detect(title, "Ethics") & seats > 0) |>
+  group_by(department) |>
+  summarize(classes = n()) |>
+  arrange(desc(classes))
+  
