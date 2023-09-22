@@ -92,15 +92,21 @@ maryland_expenses |>
   group_by(spending_location) |>
   summarize(total = sum(amount))
 arrange(desc(total))
+
+
 ```
 
 ```         
 ```
 
-**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6. What department has the most classes that mention "Ethics?" Answer: Information Studies**
+**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. **A6.Which instructor in the English department taught the most classes in 2023? Answer: Martha Nell Smith**
 
-umd_courses|> filter(str_detect(title, "Ethics") & seats > 0) |>
-  group_by(department) |>
-  summarize(classes = n()) |>
-  arrange(desc(classes))
+
+umd_courses |> 
+  filter(term == 202308 & department == "English") |>
+  group_by(instructors) |>
+  summarise(courses = n()) |>
+  arrange(desc(courses))
+
+  
   
