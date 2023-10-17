@@ -10,6 +10,7 @@ options(scipen=999)
 
 library(tidyverse)
 library(readr)
+library(janitor)
 ```
 
 Load data. Change amount column from character to a number in new variable, amount --- (i definitely did this wrong bc its all NA's --- i cant sum the column yet because its a character)
