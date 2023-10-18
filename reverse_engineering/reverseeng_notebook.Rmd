@@ -13,17 +13,50 @@ library(readr)
 library(janitor)
 ```
 
-Load data. Change amount column from character to a number in new variable, amount --- (i definitely did this wrong bc its all NA's --- i cant sum the column yet because its a character)
+Load data. Change amount column from character to a number.
 
 ```{r}
 
-sportsdonation <- read_csv("data/sports-political-donations.csv")
-glimpse(sportsdonation$Amount)
+#change Amount from <chr> to <dbl> by getting rid of special characters
 
-sportsdonation <- sportsdonation |> 
-  mutate(amount = as.numeric(Amount))
+sportsdonation <- read_csv("data/sports-political-donations.csv") |>
+  mutate(Amount = str_replace_all(Amount,'\\$','')) |>
+  mutate(Amount = str_replace_all(Amount, '\\,','')) |>
+  mutate(Amount = as.numeric(Amount))
+  
 
-sportsdonation
+```
+
+"American professional sports owners have contributed **nearly \$47 million in federal elections** since 2015, according to research by ESPN in partnership with FiveThirtyEight, including **\$10 million to Republican causes** and **\$1.9 million to Democratic causes** so far in the 2020 election cycle."
+
+```{r}
+
+#sum total donations: $46,978,697
+
+sum(sportsdonation$Amount)
+
+#find total Democrat donations 
+
+sportsdonation |>
+  filter(str_detect(Party, "Democrat")) 
+
+#find total Republican donations 
+
+sportsdonation |>
+  filter(str_detect(Party, "Republican"))
+
+```
+
+"The research includes more than **160 owners** and commissioners spanning **125 teams**"
+
+```{r}
+
+#number of owners
+sportsdonation |>
+  group_by(Owner) |>
+  summarise(n())
+
+
 
 ```
 
