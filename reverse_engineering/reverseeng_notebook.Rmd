@@ -33,14 +33,16 @@ sportsdonation <- read_csv("data/sports-political-donations.csv") |>
 
 #sum total donations: $46,978,697
 
-sum(sportsdonation$Amount)
+sportsdonation |>
+  summarise(Amount) |>
+  sum()
 
-#find total Democrat donations specific to 2020 election cycle: $1,877,133
+#find total Democrat donations specific to 2020 election cycle: $1,877,133 
 
 sportsdonation |>
   filter(str_detect(Party, "Democrat")) |>
   filter(`Election Year`== "2020") |>
-  reframe(Amount) |>
+  summarise(Amount) |>
   sum()
 
 #find total Republican donations specific to 2020 election cycle: $10,111,284
@@ -48,7 +50,7 @@ sportsdonation |>
 sportsdonation |>
   filter(str_detect(Party, "Republican")) |>
   filter(`Election Year` == "2020") |>
-  reframe(Amount) |>
+  summarise(Amount) |>
   sum()
 
 ```
