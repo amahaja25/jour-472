@@ -147,7 +147,6 @@ sportsdonation |>
   summarise(count_per_year = n()) |>
   arrange(desc(count_per_year))
 
-sportsdonation |>
-  summarise()
+
 
 ```
