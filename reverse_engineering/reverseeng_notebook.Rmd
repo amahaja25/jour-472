@@ -65,18 +65,11 @@ sportsdonation |>
   group_by(Owner) |>
   summarise(n())
 
-#find number of owners of teams = 153
-
-sportsdonation |>
-  filter(!Team == "Commissioner") |>
-  group_by(Owner) |>
-  summarise()
-
 
 sportsdonation |>
   summarise(unique(Team))
 
-#some of the owners own multiple teams which were not accounted for, need to figure out later
+#some of the owners own multiple teams, need to figure out later
 ```
 
 **Which team owners gave the most?**
