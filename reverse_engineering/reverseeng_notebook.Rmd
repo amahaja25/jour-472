@@ -76,14 +76,14 @@ sportsdonation |>
 sportsdonation |>
   summarise(unique(Team))
 
-#some of the owners own multiple teams which were not accounted for, I believe, need to figure out 
+#some of the owners own multiple teams which were not accounted for, need to figure out later
 ```
 
 **Which team owners gave the most?**
 
 Donations from team owners, by cyle and party donated to:
 
-Who provided the highest number of donations? Charles Johnson.
+Who provided the highest number of donations? **Charles Johnson.**
 
 ```{r}
 
