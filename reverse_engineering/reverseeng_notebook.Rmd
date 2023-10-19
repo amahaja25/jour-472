@@ -11,6 +11,7 @@ options(scipen=999)
 library(tidyverse)
 library(readr)
 library(janitor)
+library(lubridate)
 ```
 
 Load data. Change amount column from character to a number.
@@ -31,13 +32,13 @@ sportsdonation <- read_csv("data/sports-political-donations.csv") |>
 
 ```{r}
 
-#sum total donations: $46,978,697
+#sum total donations: $46,978,697 ~ nearly $47 million.
 
 sportsdonation |>
   summarise(Amount) |>
   sum()
 
-#find total Democrat donations specific to 2020 election cycle: $1,877,133 
+#find total Democrat donations specific to 2020 election cycle: $1,877,133 ~ $1.9 million.
 
 sportsdonation |>
   filter(str_detect(Party, "Democrat")) |>
@@ -45,7 +46,7 @@ sportsdonation |>
   summarise(Amount) |>
   sum()
 
-#find total Republican donations specific to 2020 election cycle: $10,111,284
+#find total Republican donations specific to 2020 election cycle: $10,111,284 ~ $10 million.
 
 sportsdonation |>
   filter(str_detect(Party, "Republican")) |>
@@ -59,14 +60,28 @@ sportsdonation |>
 
 ```{r}
 
-#number of owners
+#number of owners —— 158 rows, unsure what is wrong right now and how to get to the "more than 160 owners"
 sportsdonation |>
   group_by(Owner) |>
   summarise(n())
 
-sportsdonation
+#find number of owners of teams = 153
 
+sportsdonation |>
+  filter(!Team == "Commissioner") |>
+  group_by(Owner) |>
+  summarise()
+
+
+sportsdonation |>
+  summarise(unique(Team))
+
+#some of the owners own multiple teams which were not accounted for, I believe, need to figure out 
 ```
+
+**Which team owners gave the most?**
+
+Donations from team owners, by cyle and party donated to:
 
 Who provided the highest number of donations? Charles Johnson.
 
@@ -79,7 +94,7 @@ sportsdonation |>
 
 ```
 
-Which league gave the most individual donations? MLB
+Which league gave the most individual donations? **MLB**
 
 ```{r}
 
@@ -98,5 +113,41 @@ How many donations for each party?
 sportsdonation |> 
   group_by(Party) |>
   summarise(n()) 
+
+```
+
+Overall, **51.7 percent of all contributions by WNBA owners went to Democrats**, with **42.3 percent going to Republicans.** And of the **\$1.3 million contributed by WNBA owners to Republicans, 65.5 percent comes from Kelly Loeffler,** the Republican from Georgia who is co-owner of the Atlanta Dream.
+
+```{r}
+sportsdonation |>
+  filter(League == 'WNBA') |>
+  group_by(Owner) |>
+  summarise(wnba_amt = sum(Amount)) |>
+  arrange(desc(wnba_amt))
+
+#Kelly Loeffler: $896,150
+
+sportsdonation |>
+  filter(League == 'WNBA') |>
+  group_by(Party) |>
+  summarise(sum(Amount))
+
+#when adding up Republican WNBA spending, the total is $1,059,302 — this is not $1.3m, have to figure out what went wrong
+973459+82093+3750 
+```
+
+"There are 40 owners who have donated at least \$100,000 to Republican causes over the six-year period, compared to 23 owners topping \$100,000 to Democrats, helping lead to these splits."
+
+Which year had the most donations?
+
+```{r}
+
+sportsdonation |>
+  group_by(`Election Year`) |>
+  summarise(count_per_year = n()) |>
+  arrange(desc(count_per_year))
+
+sportsdonation |>
+  summarise()
 
 ```
