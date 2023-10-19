@@ -60,7 +60,7 @@ sportsdonation |>
 
 ```{r}
 
-#number of owners —— 158 rows, unsure what is wrong right now and how to get to the "more than 160 owners"
+#number of owners —— 158 rows, have to figure out way to get both owners and commisioners for the "more than 160 owners and commisioners"
 sportsdonation |>
   group_by(Owner) |>
   summarise(n())
