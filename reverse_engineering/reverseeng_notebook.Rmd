@@ -115,8 +115,6 @@ sportsdonation |>
   summarise(total = sum(amount))
 # there seems to be no WNBA donations for "Bipartisan, but mostly Democrat."
 
-sportsdonation |>
-
 ```
 
 5.  "There are 40 owners who have donated at least \$100,000 to Republican causes over the six-year period, compared to 23 owners topping \$100,000 to Democrats, helping lead to these splits."
