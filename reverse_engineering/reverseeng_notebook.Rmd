@@ -73,26 +73,19 @@ sportsdonation |>
 
     Donations from team owners, by cyle and party donated to: (this was in a table in the original story)
 
-    Who provided the highest number of donations? **Charles Johnson.**
-
 ```{r}
 
+# Who provided the highest number of donations? Charles Johnson.
 sportsdonation |>
   group_by(owner) |>
   summarise(total_donations = n()) |>
   arrange(desc(total_donations))
 
-```
-
-Which league gave the most individual donations? **MLB**
-
-```{r}
-
+# Which league gave the most individual donations? MLB
 sportsdonation |>
   group_by(league) |>
   summarise(total_donation = n()) |>
   arrange(desc(total_donation))
-
 
 ```
 
