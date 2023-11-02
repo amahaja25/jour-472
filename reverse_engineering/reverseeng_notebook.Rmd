@@ -3,6 +3,8 @@ title: "Reverse Engineering Project Notebook"
 output: html_notebook
 ---
 
+Deliverable 5: Final Notebook/Memo <https://docs.google.com/document/d/1197C83YSa2MKSKzEyou_yHwQQzzwBio_74Ynt1MvMDQ/edit?usp=sharing>
+
 Load libraries.
 
 ```{r}
