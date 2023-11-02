@@ -109,7 +109,7 @@ sportsdonation |>
 
 #when adding up Republican WNBA spending, the total is $1,055,552 — this is not $1.3m, have to figure out why. We are not sure what the discrepancy is here, but we think it might be because there is not data for "Bipartisan, but mostly Democrat" included, which makes the total a little less than what FiveThirtyEight calculated. 
 
-#FiveThirtyEight had a searchable database, and we found that some of the donations that were there were not present in our data, particularly ones that affected Kelly Loeffler's bipartisan donations. Even when we tried to redownload the data, we got the same results.
+#FiveThirtyEight had a searchable database, and we found that some of the donations that were there were not present in our data, particularly  Kelly Loeffler's bipartisan donations. Even when we tried to redownload the data, we got the same results, so this seems to be something with the data.
 
 100*(896150/1055552)
 
