@@ -67,20 +67,6 @@ sportsdonation |>
   summarise(amount) |>
   sum()
 
-
-sportsdonation |>
-  ggplot() +
-  geom_bar(aes(x=reorder(month,total_calls), weight=total_calls)) +
-  coord_flip() + 
-  theme_economist() +
-  labs(
-    title="More 911 Overdose Calls in Warmer Months",
-    x = "month",
-    y = "total calls",
-    caption = "source: Baltimore County"
-    
-  )
-
 ```
 
 3.  **Which team owners gave the most?**
@@ -121,7 +107,9 @@ sportsdonation |>
   filter(str_detect(party, 'Republican')) |>
   summarise(sum(amount))
 
-#when adding up Republican WNBA spending, the total is $1,055,552 — this is not $1.3m, have to figure out why. We are not sure what the discrepancy is here, but we 
+#when adding up Republican WNBA spending, the total is $1,055,552 — this is not $1.3m, have to figure out why. We are not sure what the discrepancy is here, but we think it might be because there is not data for "Bipartisan, but mostly Democrat" included, which makes the total a little less than what FiveThirtyEight calculated. 
+
+#FiveThirtyEight had a searchable database, and we found that some of the donations that were there were not present in our data, particularly ones that affected Kelly Loeffler's bipartisan donations. Even when we tried to redownload the data, we got the same results.
 
 100*(896150/1055552)
 
@@ -157,6 +145,8 @@ sportsdonation |>
   group_by(owner) |>
   summarise(total = sum(amount)) |>
   filter(total >= 100000)
+
+#These discrepancies are a little odd, as they are just slightly off from what FiveThirtyEight reported. We think that this could be because of the same issue with the WNBA calculations due to the data itself.
 
 
 # Which year had the most donations? 2018
