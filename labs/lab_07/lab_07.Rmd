@@ -51,17 +51,25 @@ v21 <- load_variables(2021, "acs5", cache=TRUE)
 
 ## Answer questions
 
-**Q1** What is the Maryland jurisdiction with the lowest median age, according to the ACS 2021 5-year estimates? You will need to find the variable for median age first (search for it in the 'concept' column at the data frame we just created). **A1**
+**Q1** What is the Maryland jurisdiction with the lowest median age, according to the ACS 2021 5-year estimates? You will need to find the variable for median age first (search for it in the 'concept' column at the data frame we just created). **A1 Baltimore City has the lowest median age at 35.7 years.**
 
 ```{r}
 
-view(v21)
+md_median_age <- get_acs(geography = "county",
+              variables = c(median_age = "B01002_001"),
+              state = "MD",
+              year = 2021)
 
+md_median_age |>
+  arrange(estimate)
 ```
 
-**Q2** Which Maryland counties have a median age of at least 50? You can use the dataframe you just made to answer this, but you must write code to display only those counties with a median age of at least 50. **A2**
+**Q2** Which Maryland counties have a median age of at least 50? You can use the dataframe you just made to answer this, but you must write code to display only those counties with a median age of at least 50. **A2 Talbot County and Worcester County have a median age of at least 50 years.**
 
 ```{r}
+
+md_median_age |>
+  filter(estimate >= 50)
 
 ```
 
@@ -76,18 +84,51 @@ view(v21)
 
 Which zip code has the highest rate of calls? Which has the lowest?
 
-**A3**
+**A3 20877 has the highest rate of calls and 20707 has the lowest rate of calls.**
 
 ```{r}
+
+moco_calls <- read_csv("data/montgomery_2022_overdoses.csv") |>
+  mutate(zip = as.character(zip))
+
+moco_calls_zip <- moco_calls |>
+  group_by(zip) |>
+  summarise(total_calls = n())
+
+md_18_up <- get_acs(geography = "zcta",
+              variables = "B09021_001",
+              state = "MD",
+              year = 2019)  
+  
+moco_population_zip <- moco_calls_zip |>
+  inner_join(md_18_up, by=c('zip' = 'GEOID')) |>
+  rename(population = estimate)
+  
+moco_population_zip |>
+  mutate(calls_per_1k = (total_calls/population)*1000) |>
+  arrange(desc(calls_per_1k))
+
+moco_population_zip |>
+  arrange(calls_per_1k)
 ```
 
 **Q4** Using [CensusReporter.org](https://censusreporter.org/), examine the zip codes with the highest and lowest rates and compare and contrast their demographic profiles. Is there a story here?
 
-**A4**
+**A4** 20707 has a median household income of \$91,314 with 8.4% of people below the poverty line. 20877 has a median household income of \$77,264 with 15.4% below the poverty line. 20877 also has more immigrants/foreign born population. 20707 has a 45% Black population, and 20877 has a 42% Hispanic population. There could be a story about median income and poverty levels and how that results in more or less overdose calls if the other zip codes also seem to follow this pattern.
 
 **Q5** Go back to your joined dataframe from Q3 and add two more columns representing the minimum and maximum populations based on the estimate and margin of error, then calculate per capita rates for each. Do you get the same two zip codes for the highest and lowest as you did before? Does that give you more or less confidence in your answers to Q3?
 
-**A5**
+**A5 Yes, 20877 is still the highest and 20707 is still the lowest, which gives me more confidence in my answers for Q3.**
 
 ```{r}
+
+moco_population_zip <- moco_population_zip |>
+  mutate(min_pop = population-moe, max_pop = population+moe) |>
+  mutate(per_capita_min = (total_calls/min_pop)*1000, per_capita_max = (total_calls/max_pop)*1000)
+  
+moco_population_zip |> 
+  arrange(desc(per_capita_max))
+
+moco_population_zip |> 
+  arrange(per_capita_min)
 ```
