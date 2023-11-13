@@ -55,8 +55,31 @@ add the URL of your chart.
 
 ```{r}
 
+md_gov_county <- read_csv('data/md_gov_county.csv') |> clean_names()
+md_gov_county_18 <- read_csv('data/md_gov_county_18.csv') |> clean_names()
 
+md_gov_county_joined <- md_gov_county |>
+  inner_join(md_gov_county_18, by=c('county', 'geoid'))
+
+md_gov_county
+md_gov_county_18
+
+md_gov_county_joined <- md_gov_county_joined |>
+  mutate(total = cox+moore+lashar+wallace+harding+sefcik+hogan+jealous+quinn+schlakman+write_ins.x + write_ins.y) |>
+  mutate(pct_cox = (cox/total)*100) |>
+  mutate(pct_hogan = (hogan/total)*100)
+
+
+write_csv(md_gov_county_joined, 'data/md_gov_county_joined.csv')
 ```
+
+Chart URL: <https://datawrapper.dwcdn.net/y9Ozx/1/>
+
+I chose to create a simple grouped bar chart. I initially had done a
+stacked bar chart to avoid an egregiously long chart but I was unsure if
+that made it seem like Hogan and Cox ran against each other in the same
+election so I opted for the bars on top of one another rather than next
+to each other.
 
 **Q2.** You're interested in seeing how the methods of voting have
 changed in Maryland since 2018. Using the `md_votes_by_type.csv` that
@@ -77,7 +100,24 @@ URL of your chart.
 **A2.**
 
 ```{r}
+
+md_votes_by_type <- read_csv('data/md_votes_by_type.csv') |> clean_names()
+
+md_pct_votes_by_type <- md_votes_by_type |>
+  mutate(pct_early = (early/total)*100,
+         pct_election_day = (election_day/total)*100,
+         pct_mail = (mail/total)*100)
+
+write_csv(md_pct_votes_by_type, 'data/md_pct_votes_by_type.csv')
 ```
+
+Link to chart <https://datawrapper.dwcdn.net/k1UKc/1/>
+
+I chose to make a stacked bar chart here to best illustrate the
+percentages of each type of voting within each election year. The story
+is that the pandemic increased the percentage of mail-in voting in 2020,
+and the percentage remains higher in 2022 than the pre-pandemic mail
+ballot percentage.
 
 **Q3.** You want to know more about the geography of 911 overdose calls
 in Montgomery County, Maryland, in 2022. To do that, you'll make a
@@ -101,7 +141,27 @@ choropleth map in Datawrapper. You will need to:
 What do you think the story here is, and what would you want to know
 more about? Put the answer below along with the URL of your map.
 
-**A3.**
+Link to chart: <https://datawrapper.dwcdn.net/G0pi6/1/>
+
+**A3. I think the story here is that areas with more cities or higher
+populations see higher overdose calls, but just looking at percentages
+and total calls per zip code does not tell us a full picture. I think
+also creating a chart that shows the population could tell us more about
+why the numbers look the way they do. Per capita overdose calls could
+also be more helpful.**
 
 ```{r}
+
+moco_overdoses_22 <- read_csv('data/montgomery_2022_overdoses.csv') |> clean_names()
+
+moco_overdoses_22 |>
+  nrow()
+
+moco_overdoses_22_zip <- moco_overdoses_22 |>
+  group_by(zip) |>
+  summarise(total_calls = n()) |>
+  mutate(pct_calls = (total_calls/659)*100)
+
+write_csv(moco_overdoses_22_zip, 'data/moco_overdoses_22_zip.csv')
+
 ```
