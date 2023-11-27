@@ -64,7 +64,8 @@ counties <- counties()
 #Filter out MD counties
 
 md_counties <- counties |>
-  filter(STATEFP == '24')
+  filter(STATEFP == '24') |>
+  clean_names()
 
 md_counties
 ```
@@ -72,13 +73,21 @@ md_counties
 ```{r}
 #Merge geometries with voting data
 
-md_statewide_geometry <- md_counties |> inner_join(md_statewide_county, by=c('GEOID' == 'geoid'))
+md_counties
+
+md_voting_geometry <- md_counties |> inner_join(md_statewide_county, by="geoid")
 
 
 ```
 
 ```{r}
 #Create the map
+
+ggplot() +
+  geom_sf(data=md_voting_geometry, aes(fill=pct_diff)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma")
+
 
 ```
 
@@ -88,15 +97,28 @@ md_statewide_geometry <- md_counties |> inner_join(md_statewide_county, by=c('GE
 
 ```{r}
 #Read data and calculate rate of outages per customer
+
+md_county_outages <- read_csv("data/county_outages_march2023.csv") |>
+  clean_names() |>
+  mutate(rate = outage_customers/total_customers*10000)
+
 ```
 
 ```{r}
 #Merge geometries with outage data
 
+md_outages_geometry <- md_counties |> inner_join(md_county_outages, by=c('name'='county'))
+
+md_outages_geometry
 ```
 
 ```{r}
 #Map it out
+
+ggplot() +
+  geom_sf(data=md_outages_geometry, aes(fill=rate)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma", trans="log")
 
 ```
 
@@ -113,29 +135,59 @@ Finally, make a second county map showing the per capita rate. What counties sta
 ```{r}
 #Read data and calculate change of EV vehicles
 
+electric_vehicles <- read_csv("data/ev_2020_2023.csv") |> 
+  clean_names() |>
+  mutate(pct_change = (march_2023-july_2020)/july_2020 *100)
+
+
 ```
 
 ```{r}
 #Merge geometries with EV data
+
+electric_vehicles_geometry <- md_counties |> inner_join(electric_vehicles, by=c('name'='county'))
 
 ```
 
 ```{r}
 #Map out the change
 
+ggplot() +
+  geom_sf(data=electric_vehicles_geometry, aes(fill=pct_change)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma", trans='log')
+
+
 ```
 
 ```{r}
 #Grab population data from Census
+
+md_county_population <- get_acs(geography = "county",
+              variables = c(population = "B01001_001"),
+              year = 2021,
+              state = "MD") |>
+  clean_names()
 
 ```
 
 ```{r}
 #Calculate per capita rate for March 2023
 
+electric_vehicles_pop <- electric_vehicles_geometry |> 
+ inner_join(md_county_population, by='geoid') |>
+  mutate(rate = march_2023/estimate*10000)
+
+
 ```
 
 ```{r}
 #Map out the per capita rate
+
+ggplot() +
+  geom_sf(data=electric_vehicles_pop, aes(fill=rate)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma", trans='log')
+
 
 ```
