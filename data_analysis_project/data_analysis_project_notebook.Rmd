@@ -9,6 +9,8 @@ output: html_notebook
 library(tidyverse)
 library(janitor)
 
+options(scipen=999)
+
 ```
 
 ```{r}
@@ -26,12 +28,33 @@ view(md_payments)
 
 ```{r}
 
-md_payments |>
+md_payments_by_year <- md_payments |>
   group_by(fiscal_year) |>
   summarise(total = sum(amount)) |>
-  arrange(desc(total))
+  arrange(desc(total)) 
+
+md_payments_by_year
+
+md_payments_by_year |>
+  ggplot() + 
+  geom_bar(aes(x=fiscal_year, weight=total)) +
+  labs(
+    title = "Total Money Spent by State of Maryland per Fiscal Year",
+    x = "Fiscal Year",
+    y = "Total Amount",
+    caption = "source: Maryland State Payments Data") +
+    coord_flip()
+  
 
 # Fiscal 2023 saw the highest spending from the Maryland government with $193,756,398,403 paid.
 # Fiscal 2022 was $36,656,748,838	
+
+
+
+```
+
+```{r}
+
+
 
 ```
