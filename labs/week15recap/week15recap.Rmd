@@ -22,6 +22,9 @@ library(janitor)
 library(tigris)
 library(tidycensus)
 library(corrr)
+
+census_api_key("62e3c67ce129c65ce2709f84982aa405a9811133", install=TRUE, overwrite = TRUE)
+
 ```
 
 ## Load Data
@@ -39,11 +42,13 @@ childcare_inspections$fips <- as.character(childcare_inspections$fips)
 
 ```{r}
 # This loads the county data
-md_counties <- counties() |>  filter(STATEFP == "24")
+md_counties <- counties() |>  filter(STATEFP == "24") |> clean_names()
 ```
 
 ```{r}
 # Join the childcare data with the county data 
+
+md_childcare_counties <- childcare_inspections |> left_join(md_counties, join_by('fips' == 'geoid'))
 
 ```
 
@@ -55,6 +60,8 @@ md_counties <- counties() |>  filter(STATEFP == "24")
 
 ```{r}
 # Calculate the percentage of overdue inspections per county
+
+
 
 # Create the chart with ggplot
 
@@ -69,15 +76,28 @@ md_counties <- counties() |>  filter(STATEFP == "24")
 ```{r}
 # First, grab data from the ACS. The ACS variable for children age under 5 is B06001_002 We want 2022 data.
 
+acs_under_5 <- get_acs(geography = "county",
+              variables = c(median_age = "B06001_002"),
+              state = "MD",
+              year = 2022)
+
 ```
 
 ```{r}
 # Rename the column name 'estimate', which has our population data, with something more useful, like 'children_pop'
 
+acs_under_5 <- acs_under_5 |> rename(children_pop = estimate)
+
+acs_under_5
 ```
 
 ```{r}
 # Join the dataframes
+
+md_childcare_counties <- md_childcare_counties |>
+  left_join(acs_under_5, join_by('fips' == 'GEOID'))
+
+md_childcare_counties
 
 # Calculate the rates for children per facility
 
@@ -91,6 +111,8 @@ md_counties <- counties() |>  filter(STATEFP == "24")
 
 ```{r}
 
+
+
 ```
 
 ##### **A4**:
@@ -102,10 +124,20 @@ md_counties <- counties() |>  filter(STATEFP == "24")
 ```{r}
 # Again, grab data from the ACS. The ACS variable for median income is B19013_001. We want 2022 data again.
 
+
+md_median_income <- get_acs(geography = "county",
+              variables = c(median_age = "B19013_001"),
+              state = "MD",
+              year = 2021)
+
+
+
 ```
 
 ```{r}
 # Rename the column name 'estimate', which has our income data, with something more useful, like 'median_income'
+
+
 
 ```
 
@@ -117,10 +149,17 @@ md_counties <- counties() |>  filter(STATEFP == "24")
 ```{r}
 # Create a scatterplot with median income and rate of children per facility
 
+md_childcare_income |>
+    ggplot() +
+    geom_point(aes(x=median_income, y=rate)) +
+    geom_smooth(aes(x=median_income, y=rate)), method
+
 ```
 
 ```{r}
 # Create a correlation test.
+
+cor.test(md_childcare_income$median_income, md_childcare_income$rate)
 
 ```
 
