@@ -132,7 +132,7 @@ Now let's test another one, the relationship between the per_pupil_2021 and gdp_
 
 ### Task 7: Correlate data
 
-**Task** Run the following code. Describe the model output. What do you see? **Answer The r value is -0.06 which is weaker than the previous correlation.**
+**Task** Run the following code. Describe the model output. What do you see? **Answer The r value is -0.06, which is weaker than the previous correlation.**
 
 ```{r}
 
@@ -190,7 +190,7 @@ Let's try per-pupil education spending.
 
 ### Task 10: Run t-test
 
-**Task** Run the following code. Describe the output. What do you see? **Answer The p-value is very small, which is statistically significant.**
+**Task** Run the following code. Describe the output. What do you see? **Answer The p-value is very small, which means the relationship between the two is statistically significant.**
 
 ```{r}
 t.test(per_pupil_2021 ~ vote_2020, data = state_data)
