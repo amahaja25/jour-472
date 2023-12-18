@@ -30,9 +30,12 @@ view(md_payments)
 
 ```
 
-How does the distribution of spending change from year to year?
+1.  How does the distribution of spending change from year to year?
 
 ```{r}
+
+# Fiscal 2023 saw the highest spending from the Maryland government with $193,756,398,403 paid.
+# Fiscal 2022 was $36,656,748,838	
 
 md_payments_by_year <- md_payments |>
   group_by(fiscal_year) |>
@@ -48,6 +51,10 @@ md_payments |>
   arrange(desc(amount)) 
 
 #looking at just the payments in fiscal 2023, sorted from highest to lowest, payments are repeated five times so they are counted five times, which is why the total money seems to be so high. The agency name, vendor name and amount are the exact same, and each is repeated the same amount so we believe this is a data entry error that made its way into the dataset.
+
+md_payments |>
+  filter(fiscal_year == 2023) |>
+  arrange(desc(amount))
 
 
 payments_minus_2023_24 <- md_payments |>
@@ -70,54 +77,9 @@ payments_minus_2023_24 |>
     y = "Total Amount",
     caption = "source: Maryland State Payments Data") 
 
-
-  
-
-# Fiscal 2023 saw the highest spending from the Maryland government with $193,756,398,403 paid.
-# Fiscal 2022 was $36,656,748,838	
-
-
-
 ```
 
-```{r}
-
-md_payments_by_year <- md_payments |>
-  filter(fiscal_year == "2023") |>
-  summarise(total = sum(amount)) |>
-  arrange(desc(total)) 
-
-```
-
-![]()
-
-```{r}
-
-census_api_key("62e3c67ce129c65ce2709f84982aa405a9811133", install=TRUE, overwrite = TRUE)
-readRenviron("~/.Renviron")
-
-md_pop_zip <- get_acs(geography = "zcta",
-              variables = "B01003_001",
-              state = "MD",
-              year = 2019)  
-
-md_payments
-
-md_payments_2019 <- md_payments |>
-  filter(fiscal_year == '2019') |>
-  group_by(vendor_zip) |>
-  summarize(total = sum(amount)) |>
-  arrange(desc(total))
-
-md_payments |>
-  filter(vendor_zip == '21202') 
-  
-md_payments_2019 <- md_payments_2019 |>
-  inner_join(md_pop_zip, by=c('vendor_zip' = 'GEOID'))
-  
-```
-
-Which industries spent the most money?
+2.  Which sectors did the state invest the most money into?
 
 ```{r}
 
@@ -215,7 +177,77 @@ all_industry_data <- industry_data_commerce |>
 
 ```
 
+3.  Which zip codes receive the most money?
+
 ```{r}
+
+# ACS data for total population for each zipcode
+md_zip_population <- get_acs(geography = "zcta",
+              variables = c(population = "B01001_001"),
+              year = 2019,
+              state = "MD")
+
+# Filtering md_payments to match the ZCTA data
+md_payments_2019 <- md_payments |>
+  filter(fiscal_year=="2019")|>
+  group_by(vendor_zip)|>
+  summarize(amount=sum(amount))|>
+  arrange(desc(amount))
+
+# Joining the md_payments with ZCTA data
+md_payments_2019 <- md_payments_2019 |>
+  inner_join(md_zip_population, by=c('vendor_zip'='GEOID'))
+
+md_payments_2019 <- md_payments_2019 |>
+  mutate(rate = estimate/amount*100)
+
+#The rate showed the money spent by the State of Maryland in relation to the population of a given zipcode. But this did not show us much.
+
+md_payments_2019
+
+#We used 2019 data as that is the only year that we also had population data for. The zipcode that the State of Maryland gave the most money to was 21202, which is in Baltimore.
+
+md_payments |>
+  filter(vendor_zip == 21202) |>
+  arrange(desc(amount))
+  
+#The highest payments in this zipcode overwhelmingly went to Baltimore City Public Schools from the Maryland State Department of Education.
+```
+
+Where are lower payments going compared to higher ones?
+
+```{r}
+
+md_payments_low <- md_payments |>
+  filter(amount < 100) |>
+  rename(amount_low = amount)
+
+md_payments_low |>
+  group_by(agency_name) |>
+  summarise(vendor_name, amount_low, count=n()) |>
+  arrange(desc(count))
+
+#The Maryland State Department of Education paid the most payments under $100, as it had a count of 4383 'low' payments
+
+md_payments_high <- md_payments |>
+  filter(amount > 1000000) |>
+  rename(amount_high = amount)
+
+md_payments_high |> 
+  group_by(agency_name) |>
+  summarise(vendor_name, amount_high, count=n()) |>
+  arrange(desc(count))
+
+# The Maryland Department of Health, on the other hand, had the most payments above $1,000,000, with 5330 'high' payments.
+  
+```
+
+What types of payments are going to education?
+
+```{r}
+
+#Using our data of each sector, we focused on education spending to see which agencies recieved the most money and how spending changed over time specifically within education.
+
 industry_data_education <- md_payments |>
   filter(str_detect(agency_name, "EDUCATION") | str_detect(agency_name, "SCHOOL")) |>
   group_by(fiscal_year) |>
@@ -224,22 +256,12 @@ industry_data_education <- md_payments |>
 md_payments |>
   filter(str_detect(agency_name, "EDUCATION") | str_detect(agency_name, "SCHOOL")) |>
   count(agency_name)
-```
 
-Which zip codes receive the most money?
 
-```{r}
+md_payments |>
+  filter(str_detect(agency_name, "EDUCATION") | str_detect(agency_name, "SCHOOL")) |>
+  arrange(desc(amount))
 
-```
-
-Where are lower payments going compared to higher ones?
-
-```{r}
-
-```
-
-What types of payments are going to education?
-
-```{r}
+#When we arrange the payments from the education department from highest to lowest, the highest payment went to the Mount Rainier Police Department, which could be something to look into. After this, Baltimore City Public Schools recieved the next highest payment followed by the Prince George's County Board of Education and Prince George's County Public Schools. We noticed Overlea High School in Baltimore County was one of the few schools that recieved such a high payment as opposed to the districts.
 
 ```
