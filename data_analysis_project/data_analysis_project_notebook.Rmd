@@ -19,14 +19,16 @@ Load and clean data
 
 ```{r}
 
-md_payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv") |> clean_names()
+md_payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv") |> clean_names() |> unique()
 
 view(md_payments)
+
+md_payments |>
+  unique()
 
 # The data frame has 430584 rows and 8 columns
 
 # One limitation is that it might be difficult to define each industry just based on agency, and we do not know what each code in the category column means or stands for. In terms of timeframe, we do not have limitations as our data spans from 2008 to 2024.
-
 
 ```
 
@@ -56,7 +58,6 @@ md_payments |>
   filter(fiscal_year == 2023) |>
   arrange(desc(amount))
 
-
 payments_minus_2023_24 <- md_payments |>
   filter(!fiscal_year == 2023) |>
   filter(!fiscal_year == 2024) |>
@@ -83,7 +84,10 @@ payments_minus_2023_24 |>
 
 ```{r}
 
-#Payments by industry
+#Payments by sector
+
+#We chose not to combine the count of agencies with the sector data to see the different agencies that were included in each str_detect. This allowed us to view what was counted and have a more reliable and understandable dataset.
+
 
 #Health
 industry_data_health <- md_payments |>
